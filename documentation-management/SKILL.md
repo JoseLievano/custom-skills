@@ -97,6 +97,48 @@ src/components/Auth.tsx:42
 
 **Diagrams** — Use Mermaid.js for flows, sequences, and state transitions.
 
+## Document Types
+
+### Bug Report
+
+A Bug Report documents the technical analysis of a defect and the roadmap to fix it. It is not the final technical implementation plan.
+
+Use a Bug Report to explain the problem, its impact, the analysis findings, the suspected or confirmed cause, and the evidence that supports that conclusion. A Bug Report should reference the exact code locations involved, explain why those parts of the code are responsible, and include logs when they help justify the diagnosis. If the cause is not fully confirmed, say so clearly and explain the current hypothesis and uncertainty.
+
+Bug Reports are usually the result of analyzing the codebase, behavior, and runtime evidence. They should capture the reasoning behind the diagnosis, not just the symptom. They should also explain the proposed solution and validate that direction using the relevant technology skills and up-to-date documentation from Context7 when available.
+
+Like Features, Bug Reports should include ordered non-blocking steps to resolve the issue and a final task breakdown that groups those steps by order and complexity. Those tasks are the actual implementation plans that will later be executed.
+
+For the required template and structure, read `references/doc-types.md`.
+
+### Feature
+
+A Feature document defines the technical roadmap for a feature we want to build. It is not the final technical implementation plan.
+
+Use a Feature to describe the work at a technical level: what we want to build, which systems or modules are affected, the intended architecture, the main risks, and the ordered steps required to deliver it. A Feature can include technical reasoning, code explanations, examples, and high-level implementation ideas, but it should not contain the full execution detail for each step.
+
+The most important part of a Feature is its step breakdown. Order steps in a non-blocking way so the feature can be built progressively. Put foundational or boilerplate work before dependent work, and make sure the sequence builds the feature step by step.
+
+Features can be very small or very large. Some may have only 1-3 steps, while others may have 10 or more. Every Feature should end with a task breakdown that groups steps into tasks by order and complexity.
+
+Those tasks are the actual implementation plans. A task can cover one step or a small group of closely related steps, and it should contain the detailed execution guidance, code-level decisions, and implementation detail needed to perform the work. Features define the roadmap; Tasks define the execution.
+
+For the required template and structure, read `references/doc-types.md`.
+
+### Task
+
+A Task document is the detailed implementation plan that will actually be executed by a developer or AI agent to modify the codebase.
+
+Use a Task to expand one feature step, one bug-fix step, or a small group of closely related steps into concrete implementation work. A Task should contain the full detail needed to perform the work: the goal, parent context, selected skills, current documentation, affected files, implementation steps, design decisions, validation plan, and completion criteria.
+
+Before creating a Task, read its parent document if one exists. Most Tasks come from a Feature or Bug, and the parent provides the real goal, constraints, dependencies, and architectural intent behind the work. If there is no parent, make that explicit inside the Task and include the missing context directly.
+
+When creating a Task, review the available skills and select the ones that apply to the work. When Context7 is available, use it to gather up-to-date documentation for the relevant libraries, frameworks, APIs, or tools. If stack-specific skills exist for the technologies involved, use them so the Task reflects the conventions and best practices of that stack.
+
+Every Task must define how completion will be validated. Prefer automatic verification when possible. When validation requires manual testing, document the manual checks for the user and do not attempt to execute those manual tests on the user's behalf.
+
+For the required template and structure, read `references/doc-types.md`.
+
 ## Commands Quick Reference
 
 ### Read & Search
