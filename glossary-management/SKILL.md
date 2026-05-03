@@ -7,20 +7,20 @@ description: Manages a ubiquitous language glossary inside the documentation/Glo
 
 Manages the project's ubiquitous language glossary — a shared dictionary of terms used by developers and AI agents to communicate clearly and consistently.
 
-All glossary operations go through the CLI at `cli/glossary.py` (relative to this skill file). Never read or write glossary files directly.
+All glossary operations go through the CLI tool `glossary`. Never read or write glossary files directly, always use the CLI program "glossary".
 
 ## Setup
 
 At the start of any glossary task, run from the **project root**:
 
 ```bash
-python3 <skill-dir>/cli/glossary.py categories
+glossary categories
 ```
 
-Where `<skill-dir>` is the directory containing this SKILL.md file. If this returns exit code 1 with a `.glossaryrc not found` message, run init first:
+If this returns exit code 1 with a `.glossaryrc not found` message, run init first:
 
 ```bash
-python3 <skill-dir>/cli/glossary.py init \
+glossary init \
   --json-path <abs-path-to-glossary.json> \
   --markdown-path <abs-path-to-Glossary.md>
 ```
@@ -31,7 +31,7 @@ Derive the paths from the `documentation-management` skill config, or ask the us
 
 ### Look up a term
 ```bash
-python3 <skill-dir>/cli/glossary.py search "<TermName>"
+glossary search "<TermName>"
 ```
 Returns full term JSON (including category) on stdout. Exit 1 + stderr message if not found.
 
@@ -43,7 +43,7 @@ Before calling add:
 4. Decide which category the term belongs in.
 
 ```bash
-python3 <skill-dir>/cli/glossary.py add \
+glossary add \
   --term "<name>" \
   --category "<Category>" \
   --definition "<text>" \
@@ -58,7 +58,7 @@ On exit 2: term already exists. Show the user the existing term (from stdout JSO
 Only pass flags for fields that should change. Unspecified fields are preserved.
 
 ```bash
-python3 <skill-dir>/cli/glossary.py update \
+glossary update \
   --term "<name>" \
   [--category "<NewCategory>"] \
   [--definition "<text>"] \
@@ -77,34 +77,34 @@ Before calling delete:
 2. Show it to the user and ask for explicit confirmation.
 
 ```bash
-python3 <skill-dir>/cli/glossary.py delete --term "<name>"
+glossary delete --term "<name>"
 ```
 
 ### List terms in a category
 ```bash
-python3 <skill-dir>/cli/glossary.py list --category "<Category>"
+glossary list --category "<Category>"
 ```
 
 ### List all terms
 ```bash
-python3 <skill-dir>/cli/glossary.py list-all
+glossary list-all
 ```
 
 ### List all categories
 ```bash
-python3 <skill-dir>/cli/glossary.py categories
+glossary categories
 ```
 
 ### Regenerate Markdown
 Only needed if Glossary.md is out of sync (write commands do this automatically):
 ```bash
-python3 <skill-dir>/cli/glossary.py render
+glossary render
 ```
 
 ### Get help
 ```bash
-python3 <skill-dir>/cli/glossary.py --help
-python3 <skill-dir>/cli/glossary.py <command> --help
+glossary --help
+glossary <command> --help
 ```
 
 ## Core Rules

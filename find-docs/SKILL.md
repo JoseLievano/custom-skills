@@ -21,18 +21,6 @@ description: >-
 
 Retrieve current documentation and code examples for any library using the Context7 CLI.
 
-Make sure the CLI is up to date before running commands:
-
-```bash
-npm install -g ctx7@latest
-```
-
-Or run directly without installing:
-
-```bash
-npx ctx7@latest <command>
-```
-
 ## Workflow
 
 Two-step process: resolve the library name to an ID, then query docs with that ID.
@@ -48,8 +36,6 @@ ctx7 docs <libraryId> <query>
 You MUST call `ctx7 library` first to obtain a valid library ID UNLESS the user explicitly provides a library ID in the format `/org/project` or `/org/project/version`.
 
 IMPORTANT: Do not run these commands more than 3 times per question. If you cannot find what you need after 3 attempts, use the best result you have.
-
-Run Context7 CLI requests outside Codex's default sandbox. If a Context7 CLI command fails with DNS or network errors such as ENOTFOUND, host resolution failures, or fetch failed, rerun it outside the sandbox instead of retrying inside the sandbox.
 
 ## Step 1: Resolve a Library
 
@@ -126,6 +112,14 @@ The query directly affects the quality of results. Be specific and include relev
 Use the user's full question as the query when possible, vague one-word queries return generic results.
 
 The output contains two types of content: **code snippets** (titled, with language-tagged blocks) and **info snippets** (prose explanations with breadcrumb context).
+
+### Retry with `--research` if you weren't satisfied
+
+If the default `ctx7 docs` answer didn't satisfy, re-run the same command **with `--research`** before giving up or answering from training data. This retries using sandboxed agents that git-pull the actual source repos plus a live web search, then synthesizes a fresh answer. More costly than the default — use it as a targeted retry.
+
+```bash
+ctx7 docs /vercel/next.js "How does middleware matcher handle dynamic segments in v15?" --research
+```
 
 ## Authentication
 
