@@ -8,7 +8,6 @@ Detailed step-by-step procedures for every documentation-management command.
 
 ### `list bugs [status?]`
 **Example:** `list bugs`, `list in-progress bugs`, `list bugs to-do`
-
 1. Read `doc-config.json` to find the bugs directory (default: `Bugs/`)
 2. If a status is given, list files in that subdirectory only
 3. If no status given, list all bugs grouped by status subdirectory
@@ -32,7 +31,7 @@ Same pattern as `list bugs`, using the `Tasks/` directory (statuses: `current`, 
 
 1. Use Obsidian CLI first: `obsidian search query="[query]" limit=20 silent`
 2. Fallback: use `grep -r "[query]" documentation/ --include="*.md" -l`
-3. Present results grouped by doc type (Bugs, Features, Tasks, Docs, Code)
+3. Present results grouped by doc type (Bugs, Features, Tasks, Docs, Code, ADRs)
 4. For each result, show the file path and the matching excerpt
 
 ---
@@ -53,6 +52,27 @@ Same pattern as `list bugs`, using the `Tasks/` directory (statuses: `current`, 
 2. Also search for wiki links pointing to any file whose name matches the topic
 3. Group results: direct mentions, linked files, code explanations
 4. Show a brief relationship summary for each result
+
+---
+
+### `list adrs`
+**Example:** `list adrs`
+
+1. Read `documentation/ADRs/ADR-index.md`
+2. Parse the index table
+3. Display all ADRs grouped by status, showing: number, title, status, date
+4. If the index file does not exist, report that no ADRs have been created yet
+
+---
+
+### `show adr [number]`
+**Example:** `show adr 3`, `show adr 001`
+
+1. Normalize the number to a 3-digit zero-padded format
+2. Look up the ADR in `documentation/ADRs/ADR-index.md` to find the filename
+3. Read the ADR file from `documentation/ADRs/ADR-[NNN]-[title].md`
+4. Summarize: the decision, current status, context, and key consequences
+5. If superseded, show which ADR supersedes it
 
 ---
 
@@ -117,11 +137,33 @@ Same pattern as `list bugs`, using the `Tasks/` directory (statuses: `current`, 
    - Naming convention: replace `.` with `-` → `AuthService-ts.md`
 2. If it exists, treat as `update code explanation` instead
 3. If it doesn't exist:
-   a. Read the source file
-   b. Read the code explanation template from `references/doc-types.md`
-   c. Generate the explanation: purpose, component info, fields, methods, relationships
-   d. Create at `documentation/Code/[converted-name].md`
+    a. Read the source file
+    b. Read the code explanation template from `references/doc-types.md`
+    c. Generate the explanation: purpose, component info, fields, methods, relationships
+    d. Create at `documentation/Code/[converted-name].md`
 4. Ask: "Would you like me to check for any other files that should link to this one?"
+
+---
+
+### `create adr [title]`
+**Example:** `create adr Use PostgreSQL as primary database`
+
+1. Read the ADR template from `references/doc-types/adr.md`
+2. **Determine the next ADR number:**
+   a. Read `documentation/ADRs/ADR-index.md`
+   b. Find the highest existing ADR number in the index table
+   c. The new ADR number = highest existing + 1 (start at `001` if none exist)
+3. Convert the title to kebab-case for the filename
+4. Ask the user for: domain tags and whether the status is Proposed or Accepted
+5. Fill in the template with the user's decision, context, and consequences
+6. Create the file at `documentation/ADRs/ADR-[NNN]-[kebab-title].md`
+7. **Update ADR-index.md (mandatory):**
+   a. If the index file does not exist, create it using the index template from `references/doc-types/adr.md`
+   b. Append a new row to the index table:
+      ```
+      | ADR NNN | [Title] | Accepted | YYYY-MM-DD | — |
+      ```
+8. Confirm creation and show the file path
 
 ---
 
@@ -192,6 +234,38 @@ Valid statuses: `current`, `done`
 
 ---
 
+### `set adr [number] as "[status]"`
+**Example:** `set adr 3 as "accepted"`, `set adr 1 as "deprecated"`
+
+Valid statuses: `proposed`, `accepted`, `deprecated`, `superseded`
+
+1. Normalize the ADR number to 3-digit zero-padded format
+2. Look up the ADR filename from `documentation/ADRs/ADR-index.md`
+3. Read the ADR file
+4. Update the `### Status` section to the new status
+5. Update the status tag (e.g., `#adr-proposed` → `#adr-accepted`)
+6. **Update ADR-index.md:** change the Status column in the index table row for that ADR
+7. **If setting to `superseded`:**
+   - Also prompt the user: "Which ADR supersedes this one?"
+   - Add the Superseded by line to the ADR file
+   - Update the Superseded By column in the index
+
+---
+
+### `supersede adr [number] with [title]`
+**Example:** `supersede adr 2 with Switch to MongoDB for document storage`
+
+This is a convenience command that combines creating a new ADR and marking the old one as superseded.
+
+1. Follow the `create adr` workflow to create the new ADR
+2. After creation, follow the `set adr [number] as "superseded"` workflow for the old ADR:
+   a. Update the old ADR's Status to `Superseded` with a link to the new ADR
+   b. Update the old ADR's status tag
+   c. Update the index: old ADR gets `Superseded` status and the new ADR number in Superseded By
+3. Confirm both updates
+
+---
+
 ## Linking Commands
 
 ### `link task [task] to [parent]`
@@ -223,19 +297,22 @@ Use this to set up a fresh documentation structure for a new project.
    │   ├── to-do/
    │   ├── in-progress/
    │   └── done/
-   ├── Features/
-   │   ├── to-do/
-   │   ├── in-progress/
-   │   └── done/
-   ├── Tasks/
-   │   ├── current/
-   │   └── done/
-   ├── Docs/
-   ├── Code/
-   ├── Memory/
-   └── rules/
+    ├── Features/
+    │   ├── to-do/
+    │   ├── in-progress/
+    │   └── done/
+    ├── Tasks/
+    │   ├── current/
+    │   └── done/
+    ├── Docs/
+    ├── Code/
+    ├── ADRs/
+    │   └── ADR-index.md
+    ├── Memory/
+    └── rules/
    ```
 3. Create `documentation/doc-config.json` with the project's values
-4. Ask: "Would you like me to also initialize the Memory Bank? (requires filling in `documentation/Memory/brief.md` first)"
-5. Ask: "Would you like me to create a README or overview doc in `Docs/` to describe this project?"
-6. Confirm all created paths to the user
+4. Create `documentation/ADRs/ADR-index.md` using the index template (even if empty — the table header must exist)
+5. Ask: "Would you like me to also initialize the Memory Bank? (requires filling in `documentation/Memory/brief.md` first)"
+6. Ask: "Would you like me to create a README or overview doc in `Docs/` to describe this project?"
+7. Confirm all created paths to the user

@@ -1,6 +1,6 @@
 ---
 name: documentation-management
-description: Manage Obsidian-based project documentation. Use this skill whenever a `documentation/` directory exists at the project root and the user wants to create, update, move, search, or list any documentation — bugs, features, tasks, system docs, or code explanations. Trigger on commands like "create bug", "log a feature", "update docs", "set bug as done", "list in-progress tasks", "search docs", "explain this file", "initialize documentation", or any mention of the project's docs, bugs, features, or tasks. Also trigger proactively at the start of a session when a `documentation/` directory is detected, to confirm the doc system is ready.
+description: Manage Obsidian-based project documentation. Use this skill whenever a `documentation/` directory exists at the project root and the user wants to create, update, move, search, or list any documentation — bugs, features, tasks, ADRs, system docs, or code explanations. Trigger on commands like "create bug", "log a feature", "update docs", "set bug as done", "list in-progress tasks", "search docs", "explain this file", "initialize documentation", "create adr", "list adrs", or any mention of the project's docs, bugs, features, tasks, or ADRs. Also trigger proactively at the start of a session when a `documentation/` directory is detected, to confirm the doc system is ready.
 ---
 
 # Documentation Management
@@ -28,12 +28,14 @@ At the start of any documentation task:
     "tasks": "Tasks",
     "docs": "Docs",
     "code": "Code",
+    "adrs": "ADRs",
     "rules": "rules"
   },
   "statuses": {
     "bugs": ["to-do", "in-progress", "done"],
     "features": ["to-do", "in-progress", "done"],
-    "tasks": ["current", "done"]
+    "tasks": ["current", "done"],
+    "adrs": ["proposed", "accepted", "deprecated", "superseded"]
   },
   "obsidian": {
     "use_cli": true,
@@ -74,6 +76,8 @@ documentation/
 │   └── done/
 ├── Docs/
 ├── Code/
+├── ADRs/
+│   └── ADR-index.md        ← Master index of all ADRs (mandatory)
 ├── Memory/                 ← Memory Bank files (managed by memory-bank skill)
 └── rules/
 ```
@@ -83,10 +87,11 @@ documentation/
 All files use Obsidian markdown. Keep these consistent across all doc types:
 
 **Tags** — `#tag-name` (kebab-case), placed at the top of the file.
-- Type: `#bug`, `#feature`, `#task`, `#new-feature`, `#enhancement`, `#refactor`, `#integration`
+- Type: `#bug`, `#feature`, `#task`, `#adr`, `#new-feature`, `#enhancement`, `#refactor`, `#integration`
 - Importance: `#low`, `#medium`, `#high`, `#critical`
 - Technical: `#performance`, `#security`, `#reliability`, `#architectural`, `#optimization`, `#usability`
-- Status: `#in-progress`, `#blocked`, `#needs-review`
+- Status: `#in-progress`, `#blocked`, `#needs-review`, `#adr-proposed`, `#adr-accepted`, `#adr-deprecated`, `#adr-superseded`
+- ADR Domain: `#data`, `#infrastructure`, `#frontend`, `#backend`, `#api-design`, `#testing`, `#devops`, `#architecture`
 
 **Internal links** — `[[FileName]]` or `[[Folder/FileName|Display Text]]`
 
@@ -109,7 +114,7 @@ Bug Reports are usually the result of analyzing the codebase, behavior, and runt
 
 Like Features, Bug Reports should include ordered non-blocking steps to resolve the issue and a final task breakdown that groups those steps by order and complexity. Those tasks are the actual implementation plans that will later be executed.
 
-For the required template and structure, read `references/doc-types.md`.
+For the required template and structure, read `references/doc-types/bug.md`.
 
 ### Feature
 
@@ -123,7 +128,7 @@ Features can be very small or very large. Some may have only 1-3 steps, while ot
 
 Those tasks are the actual implementation plans. A task can cover one step or a small group of closely related steps, and it should contain the detailed execution guidance, code-level decisions, and implementation detail needed to perform the work. Features define the roadmap; Tasks define the execution.
 
-For the required template and structure, read `references/doc-types.md`.
+For the required template and structure, read `references/doc-types/feature.md`.
 
 ### Task
 
@@ -137,7 +142,19 @@ When creating a Task, review the available skills and select the ones that apply
 
 Every Task must define how completion will be validated. Prefer automatic verification when possible. When validation requires manual testing, document the manual checks for the user and do not attempt to execute those manual tests on the user's behalf.
 
-For the required template and structure, read `references/doc-types.md`.
+For the required template and structure, read `references/doc-types/task.md`.
+
+### Architecture Decision Record (ADR)
+
+An Architecture Decision Record captures a significant architectural decision made during the project, along with its context and consequences. ADRs follow the format defined by Michael Nygard.
+
+Use an ADR to document decisions that affect the structure, non-functional characteristics, dependencies, interfaces, or construction techniques of the system. An ADR is not a general design doc — it captures a single, specific, concrete decision and the forces that shaped it. Record the context (the forces at play), the decision (what we chose and why), and the consequences (what becomes easier or more difficult).
+
+ADRs are immutable once accepted. If a decision changes, create a new ADR that supersedes the old one and update the ADR index.
+
+The `documentation/ADRs/ADR-index.md` file is **mandatory** — it serves as the master index of all ADRs. Every time an ADR is created, superseded, or changes status, the index must be updated.
+
+For the required template, naming convention, and detailed agent workflows (including how to number ADRs, update the index, and handle superseding), read `references/doc-types/adr.md`.
 
 ## Commands Quick Reference
 
@@ -147,8 +164,10 @@ For the required template and structure, read `references/doc-types.md`.
 | `list bugs [status?]` | List bugs, optionally filtered by status |
 | `list features [status?]` | List features, optionally filtered by status |
 | `list tasks [status?]` | List tasks, optionally filtered by status |
+| `list adrs` | List all ADRs from the index |
 | `search docs [query]` | Full-text search across documentation |
 | `show doc [file]` | Read and summarize a documentation file |
+| `show adr [number]` | Read and summarize a specific ADR |
 | `find related [topic]` | Find all docs connected to a topic or concept |
 
 ### Create
@@ -159,6 +178,7 @@ For the required template and structure, read `references/doc-types.md`.
 | `create task [name] for [parent]` | New task doc linked to a parent bug/feature |
 | `create doc [name]` | New system/process doc in `Docs/` |
 | `create code explanation [file]` | New code explanation in `Code/` |
+| `create adr [title]` | New ADR in `ADRs/` with status set and index updated |
 
 ### Update
 | Command | Action |
@@ -172,6 +192,7 @@ For the required template and structure, read `references/doc-types.md`.
 | `set bug [file] as "[status]"` | Move bug: to-do → in-progress → done |
 | `set feature [file] as "[status]"` | Move feature: to-do → in-progress → done |
 | `set task [file] as "[status]"` | Move task: current → done |
+| `set adr [number] as "[status]"` | Update ADR status (proposed, accepted, deprecated, superseded) |
 
 ### Linking & Init
 | Command | Action |
@@ -182,5 +203,5 @@ For the required template and structure, read `references/doc-types.md`.
 ---
 
 For detailed step-by-step workflows for each command, read `references/commands.md`.
-For file templates and required structure for each doc type, read `references/doc-types.md`.
+For file templates and required structure for each doc type, read the corresponding file under `references/doc-types/`: `references/doc-types/bug.md`, `references/doc-types/feature.md`, `references/doc-types/task.md`, `references/doc-types/code-explanation.md`, `references/doc-types/system-doc.md`, `references/doc-types/adr.md`.
 For Obsidian CLI syntax and patterns, read `references/obsidian-cli.md`.
