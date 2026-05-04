@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "task.md",
+                "file": "shadcn-component-discovery/references/registries.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "task"
+              "title": "registries"
             }
           }
         ]
@@ -185,8 +185,12 @@
   },
   "active": "c39bdeb3e6f7c387",
   "lastOpenFiles": [
-    "task-executor.md",
+    "shadcn-component-discovery/SKILL.md",
+    "bug-skills/bug-findings-solver/SKILL.md",
     "task.md",
+    "bug-skills/bug-findings-solver",
+    "bug-skills",
+    "task-executor.md",
     "task-creator.md",
     "feature-skills/feature-creator/SKILL.md",
     "task-skills/task-creator/SKILL.md",
@@ -207,7 +211,6 @@
     "feature-skills",
     "grill-me/SKILL.md",
     "interview-me/SKILL.md",
-    "interview-me",
     "solid-deep-design/SKILL.md",
     "solid-deep-design/references/deepening-strategies.md"
   ]
