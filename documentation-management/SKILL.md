@@ -114,7 +114,7 @@ Bug Reports are usually the result of analyzing the codebase, behavior, and runt
 
 Like Features, Bug Reports should include ordered non-blocking steps to resolve the issue and a final task breakdown that groups those steps by order and complexity. Those tasks are the actual implementation plans that will later be executed.
 
-For the required template and structure, read `references/doc-types/bug.md`.
+For the required template and structure, read [bug.md](references/doc-types/bug.md).
 
 ### Feature
 
@@ -128,7 +128,7 @@ Features can be very small or very large. Some may have only 1-3 steps, while ot
 
 Those tasks are the actual implementation plans. A task can cover one step or a small group of closely related steps, and it should contain the detailed execution guidance, code-level decisions, and implementation detail needed to perform the work. Features define the roadmap; Tasks define the execution.
 
-For the required template and structure, read `references/doc-types/feature.md`.
+For the required template and structure, read [feature.md](references/doc-types/feature.md).
 
 ### Task
 
@@ -142,7 +142,7 @@ When creating a Task, review the available skills and select the ones that apply
 
 Every Task must define how completion will be validated. Prefer automatic verification when possible. When validation requires manual testing, document the manual checks for the user and do not attempt to execute those manual tests on the user's behalf.
 
-For the required template and structure, read `references/doc-types/task.md`.
+For the required template and structure, read [task.md](references/doc-types/task.md).
 
 ### Architecture Decision Record (ADR)
 
@@ -154,7 +154,7 @@ ADRs are immutable once accepted. If a decision changes, create a new ADR that s
 
 The `documentation/ADRs/ADR-index.md` file is **mandatory** — it serves as the master index of all ADRs. Every time an ADR is created, superseded, or changes status, the index must be updated.
 
-For the required template, naming convention, and detailed agent workflows (including how to number ADRs, update the index, and handle superseding), read `references/doc-types/adr.md`.
+For the required template, naming convention, and detailed agent workflows (including how to number ADRs, update the index, and handle superseding), read [adr.md](references/doc-types/adr.md).
 
 ## Commands Quick Reference
 
@@ -202,6 +202,6 @@ For the required template, naming convention, and detailed agent workflows (incl
 
 ---
 
-For detailed step-by-step workflows for each command, read `references/commands.md`.
-For file templates and required structure for each doc type, read the corresponding file under `references/doc-types/`: `references/doc-types/bug.md`, `references/doc-types/feature.md`, `references/doc-types/task.md`, `references/doc-types/code-explanation.md`, `references/doc-types/system-doc.md`, `references/doc-types/adr.md`.
-For Obsidian CLI syntax and patterns, read `references/obsidian-cli.md`.
+For detailed step-by-step workflows for each command, read [commands.md](references/commands.md).
+For file templates and required structure for each doc type, read the corresponding file under [doc-types](references/doc-types/): [bug.md](references/doc-types/bug.md), [feature.md](references/doc-types/feature.md), [task.md](references/doc-types/task.md), [code-explanation.md](references/doc-types/code-explanation.md), [system-doc.md](references/doc-types/system-doc.md), [adr.md](references/doc-types/adr.md).
+For Obsidian CLI syntax and patterns, read [obsidian-cli.md](references/obsidian-cli.md).
