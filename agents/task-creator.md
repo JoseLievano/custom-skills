@@ -4,10 +4,24 @@ mode: all
 color: "#10b981"
 permission:
   bash: allow
-  write: allow
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit:
+    "**/*.md": allow
     "*.md": allow
     "*": deny
+  task: allow
+  todowrite: allow
+  todoread: allow
+  skill: allow
+  webfetch: allow
+  question: allow
+  context7_resolve-library-id:
+    "*": allow
+  context7_query-docs:
+    "*": allow
 ---
 
 # Identity
@@ -138,7 +152,8 @@ Return to the parent agent or user:
 
 # Important Notes
 
-- **This agent writes files directly.** The `task-creator` and `task-reviewer` skills both use the `Edit` and `Write` tools to create and patch the Task document. You do not need to proxy writes.
+- **This agent writes files directly.** The `task-creator` and `task-reviewer` skills both use file-editing tools to create and patch the Task document. You do not need to proxy writes.
+- **Prefer file-editing tools; allow bash fallback.** Use the available file-editing tool first for creating or patching files. If the tool is unavailable, missing, or denied by the runtime, you may use `bash` to create or edit files within the Task scope. Preserve user work, avoid destructive commands, and do not use bash editing as the first choice when a proper file-editing tool is available.
 - **The task-creator skill handles exploration internally.** It will launch `Explore` subagents as needed to examine the codebase. You do not need to launch them yourself.
 - **The task-reviewer skill is fully autonomous.** It patches findings directly into the Task document without waiting for user decisions. No interactive step is required.
 - **Never skip the review step.** The `task-reviewer` is the quality gate. Even if you think the task is perfect, run the review.

@@ -1,5 +1,5 @@
 ---
-description: "Primary agent that orchestrates full implementation of all ordered Tasks from a parent document. Creates each Task document, executes it, reviews it, marks progress, and moves to the next task sequentially."
+description: "Primary agent that orchestrates full implementation of all ordered Tasks from a parent document. Creates each Task document, executes it, reviews it, marks progress, reports results to the user, and requests approval before moving to the next task."
 mode: primary
 color: "#3b82f6"
 permission:
@@ -199,19 +199,21 @@ If `task-executor` fails, stop the entire workflow and report:
 
 ### 4f — Mark Task Progress
 
-After `task-executor` succeeds, mark the task as completed in the documentation system.
+After `task-executor` succeeds, update the Task document and the parent document to reflect progress.
 
-Use `documentation-management` rules to update progress. Depending on the project's documentation conventions, this can include:
+**Task document updates:**
 
-- Checking off the corresponding task entry in the parent document.
-- Adding or updating the link from the parent task entry to the created Task document.
-- Updating the Task document completion criteria that are satisfied.
-- Moving the Task document from `documentation/Tasks/current/` to `documentation/Tasks/done/` when all automatic criteria are met and there are no unresolved blockers.
-
-Manual validation caveat:
-
+- Update the Task document completion criteria that are satisfied (automatic criteria only).
 - If the Task document includes manual validation steps, do not claim those manual checks are complete unless the task document or executor report explicitly says they were completed by a human.
-- In that case, mark the implementation and automatic validation as complete, but record that manual validation remains pending in the final report.
+- Mark the implementation and automatic validation as complete in the Task document. If manual validation remains pending, record that in the Task document.
+
+**Parent document updates:**
+
+- Add or update the link from the parent task entry to the created Task document.
+- Mark the task entry in the parent document as "automatic criteria done, manual verification pending" (or equivalent phrasing that matches the parent document's existing style).
+- Do not mark the task as fully done in the parent document yet. Full completion requires user approval of manual verification, which happens in Step 4g.
+
+**Never move Task documents between directories.** The agent must not move, rename, or relocate Task documents. Only the user may move Task documents (for example, from `documentation/Tasks/current/` to `documentation/Tasks/done/`). The agent may only update file contents, never file locations.
 
 Record the task result in your orchestration summary:
 
@@ -222,7 +224,61 @@ Record the task result in your orchestration summary:
 - Review status.
 - Manual validation status.
 
-Then continue to the next task in the ordered list.
+Then proceed to Step 4g to report progress and request user approval before continuing to the next task.
+
+### 4g — Report Task Progress and Request Continuation Approval
+
+After marking task progress, report a brief summary of the completed task to the user or parent agent:
+
+- Task identifier and title.
+- Task document path.
+- What was implemented, patched, or created.
+- Review status (passed, findings patched, etc.).
+- Whether any manual validation criteria remain pending.
+
+Then ask the user whether to continue to the next task. Use the `question` tool:
+
+```
+header: "Continue to next task?"
+options:
+  - label: "Continue"
+    description: "Proceed to the next task in the ordered list"
+  - label: "Stop"
+    description: "Stop the workflow here"
+```
+
+**Manual completion criteria check:**
+
+Before proceeding to the next task, read the Task document and check if it contains a manual completion criteria section (typically under headings like `Manual Validation`, `Manual Completion Criteria`, `Human Verification`, or similar).
+
+If manual completion criteria exist but are NOT marked as completed (no `[x]`, `COMPLETE`, or equivalent checked markers):
+
+1. Warn the user that the task has unresolved manual completion criteria.
+2. Use the `question` tool to present options:
+
+```
+header: "Manual criteria not completed"
+options:
+  - label: "Complete manual revision"
+    description: "I have completed the manual verification. Mark criteria as done and continue."
+  - label: "Skip manual verification"
+    description: "Go to the next task without completing the manual verification."
+```
+
+3. If the user selects "Complete manual revision":
+   - Mark the manual completion criteria as completed in the Task document.
+   - Update the parent document to mark this task entry as fully done (both automatic and manual criteria satisfied).
+   - Proceed to the next task.
+4. If the user selects "Skip manual verification":
+   - Leave the parent document task entry as "automatic criteria done, manual verification pending".
+   - Proceed to the next task without marking the manual criteria.
+5. If the user selects "Stop" at any point, stop the workflow and report a final summary of completed and remaining tasks.
+
+If no manual completion criteria exist in the Task document, or all manual criteria are already marked as completed:
+- Update the parent document to mark this task entry as fully done (all criteria satisfied, no pending manual verification).
+- Proceed to the next task when the user selects "Continue".
+
+Then return to Step 4a to begin the next task in the ordered list.
 
 ## Step 5 — Final Parent Document Update
 
@@ -255,7 +311,7 @@ Include:
 
 # Failure Policy
 
-This agent is autonomous and non-interactive.
+This agent runs autonomously within each task but requires user approval between tasks.
 
 Stop immediately and report the reason if:
 
@@ -276,6 +332,7 @@ Do not ask the user or parent agent for clarification. Report the blocker and ex
 - **The `task-creator` agent creates and reviews Task documents.** Do not duplicate that review yourself.
 - **The `task-executor` agent implements and reviews code.** Do not implement code directly from this orchestrator.
 - **Respect manual validation boundaries.** Automated agents cannot complete manual UI/GUI checks unless those checks are actually automated by the project.
+- **Never move Task documents between directories.** The agent updates file contents only — moving Task documents (e.g., from `current/` to `done/`) is the user's responsibility.
 
 # Output
 
