@@ -180,7 +180,9 @@ Evaluate the assigned solution against:
 - Implementation complexity and overengineering risk
 - Compatibility with relevant library/framework/API documentation
 
-Return:
+The last thing you do is returning to the parent agent/user, is absolutly neccesary to return back to the caller, you cannot get stuck in "suggesting next step..." or similar, do not use that kind of tools, you must return to the caller with a paragraph that does not contain any new line characters, so is effectivly a one line, one big line, where you will put all the following information:
+
+Monolit paragraph with the following result information:
 1. One-sentence verdict
 2. Pros
 3. Cons
@@ -189,7 +191,6 @@ Return:
 6. User impact: low / medium / high
 7. Architecture impact: low / medium / high
 8. Recommendation: recommend / do not recommend / recommend with changes
-9. Suggested wording to patch into the parent document if selected
 ```
 
 ### 3d — Launch One Alternative-Solution Subagent
@@ -204,6 +205,8 @@ The alternative-solution subagent must:
 - Return the same fields as solution subagents.
 - Include `Is this materially better than the current recommended solution? Yes/No` with reasoning.
 - Not edit files.
+- Use a similar prompt as the other agents, respecting specially the returning rules.
+- Return in the same way the other agents returns.
 
 ### 3e — Synthesize the Recommendation
 
