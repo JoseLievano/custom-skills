@@ -1,0 +1,2 @@
+#!/bin/bash
+exec python3 /home/jlievano/.agents/skills/glossary-management/cli/glossary.py "$@"
