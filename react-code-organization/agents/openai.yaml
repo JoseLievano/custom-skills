@@ -1,4 +1,0 @@
-interface:
-  display_name: "React Code Organization"
-  short_description: "Feature-based organization rules for large React codebases"
-  default_prompt: "Use this skill to organize or refactor a large React codebase into a feature-based architecture with clear boundaries, public APIs, thin pages, and shared-vs-feature ownership rules."
